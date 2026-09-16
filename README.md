@@ -373,12 +373,4 @@ This project was developed as part of:
 
 SDAIA Academy GitHub: https://github.com/SDAIAAcademy
 
-## Submission
 
-The repository contains the project code and this `README.md` as the
-main project documentation.
-
-## License
-
-This project is provided for educational and project-submission
-purposes.
