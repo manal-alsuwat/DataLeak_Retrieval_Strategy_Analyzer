@@ -1,0 +1,8 @@
+PyMuPDF
+sentence-transformers
+rank-bm25
+chromadb
+scikit-learn
+pandas
+numpy
+streamlit
