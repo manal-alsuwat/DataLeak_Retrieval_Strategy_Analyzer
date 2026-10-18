@@ -13,6 +13,8 @@ Built for *Modern Data Engineering for Advanced AI Systems* — SDAIA Academy.
 
 The app is deployed on Streamlit Community Cloud: **https://ngrmbp5ix7svrfcsdgutdb.streamlit.app**
 
+![Streamlit app](docs/app-screenshot.png)
+
 Ask one of the sample questions or type your own. No API key is needed; the sidebar lets you use your own OpenRouter key instead if you prefer. The first visit after a period of inactivity can take about a minute while the app wakes up.
 
 ## How it works
@@ -215,7 +217,8 @@ DataLeak_Retrieval_Strategy_Analyzer/
 │   │   └── PersonalDataBreachIncidents.pdf
 │   └── embeddings_cache.npz
 ├── docs/
-│   └── results.md
+│   ├── results.md
+│   └── app-screenshot.png
 ├── app.py                  # Streamlit interface
 ├── retrieval_debugger.py   # pipeline + CLI
 ├── requirements.txt
