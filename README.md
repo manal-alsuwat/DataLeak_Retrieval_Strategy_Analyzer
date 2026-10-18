@@ -8,6 +8,8 @@ Answers carry inline citations in the form `[PDPL · Article 6 · p. 4]`, and a 
 
 Built for *Modern Data Engineering for Advanced AI Systems* — SDAIA Academy.
 
+**Live demo:** https://<your-app>.streamlit.app (replace with your Streamlit Community Cloud link)
+
 ## How it works
 
 ```mermaid
@@ -67,7 +69,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`sentence-transformers` pulls in PyTorch, so the install is a few GB. On the first run the Cross-Encoder (~90 MB) is downloaded from Hugging Face. The chunk embeddings for the included documents ship in `data/embeddings_cache.npz`; they are requested from OpenRouter again only if the documents or the embedding model change.
+`requirements.txt` pins the CPU build of PyTorch, so the install stays around 1 GB instead of the multi-GB CUDA build. On the first run the Cross-Encoder (~90 MB) is downloaded from Hugging Face. The chunk embeddings for the included documents ship in `data/embeddings_cache.npz`; they are requested from OpenRouter again only if the documents or the embedding model change.
 
 Add your [OpenRouter](https://openrouter.ai/) API key. Either create a `.env` file in the project folder containing:
 
@@ -164,27 +166,39 @@ directly or indirectly make it possible to identify an individual
 [PDPL · Article 1 · p. 2].
 ```
 
+## Deploying on Streamlit Community Cloud
+
+1. Push the repository to GitHub.
+2. On [share.streamlit.io](https://share.streamlit.io) choose *New app*, select the repository, branch `main` and `app.py`.
+3. Under *Advanced settings → Secrets* add:
+   ```toml
+   OPENROUTER_API_KEY = "your_key"
+   ```
+4. Deploy. The first start takes a few minutes while PyTorch and the Cross-Encoder are downloaded; later restarts are faster.
+
+The key stays in the app's secrets and is never committed. Both models used through OpenRouter are free-tier, but the key is still yours, so keep an eye on usage if the link is shared widely.
+
 ## Results
 
-Eight queries were run end to end from the terminal, seven about the documents and one out-of-scope control. The full log, produced with an earlier version of the script before citation tags were added, is in [`docs/results.md`](docs/results.md).
+The eight test questions below were run end to end with the current code. Full retrieval tables and the model's answers are in [`docs/results.md`](docs/results.md).
 
 | # | Query | Outcome |
 |---|---|---|
-| 1 | Definition of personal data (Art. 1) | Correct, grounded |
-| 2 | Processing without consent (Art. 6) | Correct, grounded |
-| 3 | Definition of sensitive data | Grounded; model flagged a truncated chunk |
-| 4 | When to notify SDAIA of a breach | Correct, grounded (72-hour rule) |
-| 5 | Three stages of breach handling | Retrieval OK; provider returned HTTP 502 |
-| 6 | Risks and consequences of a breach | Correct, grounded |
-| 7 | Penalty for violating the PDPL | Correct, grounded (Art. 35) |
+| 1 | Definition of personal data (Art. 1) | Correct, cited `[PDPL · Article 1 · p. 2]` |
+| 2 | Processing without consent (Art. 6) | Correct, four cases listed with citations |
+| 3 | Definition of sensitive data | Correct but truncated at a chunk boundary; model did not fill the gap |
+| 4 | When to notify SDAIA of a breach | Correct, 72-hour rule from PDBIG plus the duty from PDPL |
+| 5 | Three stages of breach handling | Correct, cited across four PDBIG pages |
+| 6 | Risks and consequences of a breach | Correct, cited |
+| 7 | Penalty for violating the PDPL | Correct (Art. 35), and stated that other penalties are not in the text |
 | 8 | *What is artificial intelligence?* (out of scope) | Declined; no outside knowledge used |
 
 What stood out:
 
-- Semantic search and BM25 returned different candidates for the same question, and the reranked top 5 usually contained chunks from both.
+- Of the 40 chunks that reached the final top 5 across the eight runs, 22 were found by both retrievers, 12 by semantic search only and 6 by BM25 only, so neither retriever is redundant.
 - The Cross-Encoder changed the order noticeably; the top semantic hit was not always the top reranked hit.
-- For the out-of-scope query all reranker scores were strongly negative (around -11) and the model refused to answer.
-- The single failure was a temporary error from the model provider, not a retrieval problem.
+- For the out-of-scope query every reranker score was around −11 and the model refused to answer.
+- Test 3 shows the cost of fixed-size chunking: a definition split across two chunks comes back incomplete.
 
 ## Project structure
 

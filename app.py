@@ -101,11 +101,19 @@ def rows(results, score_key="score"):
 with st.sidebar:
     st.header("Configuration")
 
+    # Locally the key comes from the environment or .env; on Streamlit Community
+    # Cloud it comes from the app's Secrets. Visitors can also paste their own.
+    default_key = os.getenv("OPENROUTER_API_KEY", "")
+    if not default_key:
+        try:
+            default_key = st.secrets.get("OPENROUTER_API_KEY", "")
+        except Exception:  # no secrets file when running locally
+            default_key = ""
     api_key = st.text_input(
         "OpenRouter API key",
-        value=os.getenv("OPENROUTER_API_KEY", ""),
+        value=default_key,
         type="password",
-        help="Pre-filled from OPENROUTER_API_KEY if set. Used only for this session.",
+        help="Pre-filled from the environment or app secrets if set. Used only for this session.",
     )
 
     st.subheader("Retrieval")
