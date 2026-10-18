@@ -101,20 +101,24 @@ def rows(results, score_key="score"):
 with st.sidebar:
     st.header("Configuration")
 
-    # Locally the key comes from the environment or .env; on Streamlit Community
-    # Cloud it comes from the app's Secrets. Visitors can also paste their own.
-    default_key = os.getenv("OPENROUTER_API_KEY", "")
-    if not default_key:
+    # The server-side key (environment / .env locally, app Secrets on Streamlit
+    # Community Cloud) is never sent to the browser. A visitor may paste their
+    # own key instead; it is kept only for their session.
+    server_key = os.getenv("OPENROUTER_API_KEY", "")
+    if not server_key:
         try:
-            default_key = st.secrets.get("OPENROUTER_API_KEY", "")
+            server_key = st.secrets.get("OPENROUTER_API_KEY", "")
         except Exception:  # no secrets file when running locally
-            default_key = ""
-    api_key = st.text_input(
+            server_key = ""
+    user_key = st.text_input(
         "OpenRouter API key",
-        value=default_key,
         type="password",
-        help="Pre-filled from the environment or app secrets if set. Used only for this session.",
+        placeholder="Leave empty to use the app's key" if server_key else "Required",
+        help="Optional if the app has its own key. Used only for your session, never stored.",
     )
+    api_key = user_key.strip() or server_key
+    if server_key and not user_key:
+        st.caption("Using the app's built-in key.")
 
     st.subheader("Retrieval")
     semantic_k = st.slider("Semantic search · top k", 1, 20, SEMANTIC_TOP_K)
