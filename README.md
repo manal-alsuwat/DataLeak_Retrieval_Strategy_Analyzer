@@ -1,6 +1,7 @@
 # DataLeak Retrieval Strategy Analyzer
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ngrmbp5ix7svrfcsdgutdb.streamlit.app)
 
 A Retrieval-Augmented Generation (RAG) pipeline that answers questions from two official Saudi documents, the Personal Data Protection Law (PDPL) and the Personal Data Breach Incidents Procedural Guide (PDBIG), with a focus on **retrieval quality**: semantic search and BM25 run side by side, their candidates are merged, reranked by a Cross-Encoder, and only the top evidence is handed to the LLM. The model is instructed to answer from that evidence alone.
 
@@ -8,7 +9,11 @@ Answers carry inline citations in the form `[PDPL · Article 6 · p. 4]`, and a 
 
 Built for *Modern Data Engineering for Advanced AI Systems* — SDAIA Academy.
 
-**Live demo:** https://<your-app>.streamlit.app (replace with your Streamlit Community Cloud link)
+## Try it online
+
+The app is deployed on Streamlit Community Cloud: **https://ngrmbp5ix7svrfcsdgutdb.streamlit.app**
+
+Ask one of the sample questions or type your own. No API key is needed; the sidebar lets you use your own OpenRouter key instead if you prefer. The first visit after a period of inactivity can take about a minute while the app wakes up.
 
 ## How it works
 
